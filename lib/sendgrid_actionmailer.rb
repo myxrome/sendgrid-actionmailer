@@ -90,11 +90,12 @@ module SendGridActionMailer
 
       personalization_hash =  self.class.transform_keys(personalization_hash, &:to_s)
 
+      if personalization_hash['from']
+        from = personalization_hash['from']
+        personalization.add_from(Email.new(email: from['email'], name: from['name']))
+      end
       (personalization_hash['to'] || []).each do |to|
         personalization.add_to Email.new(email: to['email'], name: to['name'])
-      end
-      if from = personalization_hash['from']
-        personalization.add_from(Email.new(email: from['email'], name: from['name']))
       end
       (personalization_hash['cc'] || []).each do |cc|
         personalization.add_cc Email.new(email: cc['email'], name: cc['name'])
